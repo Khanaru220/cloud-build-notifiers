@@ -18,8 +18,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"text/template"
 	"strings"
+	"text/template"
+	"time"
 
 	cbpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"github.com/GoogleCloudPlatform/cloud-build-notifiers/lib/notifiers"
@@ -69,6 +70,18 @@ func (s *slackNotifier) SetUp(ctx context.Context, cfg *notifiers.Config, blockK
 		"replace": func(s, old, new string) string {
 			return strings.ReplaceAll(s, old, new)
 		},
+		"slice": func(s string, start, end int) string {
+			if start < 0 {
+				start = 0
+			}
+			if end > len(s) {
+				end = len(s)
+			}
+			if start > end {
+				return ""
+			}
+			return s[start:end]
+		},
 	}).Parse(blockKitTemplate)
 
 	s.tmpl = tmpl
@@ -84,6 +97,9 @@ func (s *slackNotifier) SendNotification(ctx context.Context, build *cbpb.Build)
 	}
 
 	log.Infof("sending Slack webhook for Build %q (status: %q)", build.Id, build.Status)
+
+	log.Infof("Log build: %+v", build)
+	log.Infof("Log context: %+v", ctx)
 
 	bindings, err := s.br.Resolve(ctx, nil, build)
 	if err != nil {
@@ -113,13 +129,21 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 	}
 
 	var clr string
+	var colourCode string
+	var buildDuration string
+
 	switch build.Status {
 	case cbpb.Build_SUCCESS:
-		clr = "#22bb33"
+		clr = "🟢"
+		colourCode = "#0DBE0C"
+		buildDuration = formatDuration(int(build.FinishTime.Seconds) - int(build.StartTime.Seconds))
 	case cbpb.Build_FAILURE, cbpb.Build_INTERNAL_ERROR, cbpb.Build_TIMEOUT:
-		clr = "#bb2124"
+		clr = "🔴"
+		colourCode = "#AE1413"
+		buildDuration = formatDuration(int(time.Now().Unix()) - int(build.StartTime.Seconds))
 	default:
-		clr = "#f0ad4e"
+		clr = "🟠"
+		colourCode = "#DE7A00"
 	}
 
 	var buf bytes.Buffer
@@ -133,5 +157,55 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 		return nil, fmt.Errorf("failed to unmarshal templating JSON: %w", err)
 	}
 
-	return &slack.WebhookMessage{Attachments: []slack.Attachment{{Color: clr, Blocks: blocks}}}, nil
+	log.Infof("Block in writeMessage() %+v", blocks)
+	log.Infof("clr %q", clr)
+
+	// log.Infof("Ts field: %+v", time.Now().UnixMilli())
+	log.Infof("Ts field: %+v", build.GetCreateTime().AsTime())
+	log.Infof("timing field: %+v", build.GetTiming())
+
+	var messageParts []string
+
+	// Helper function to append non-empty values
+	wrapWith := func(part string, startWrapChar string, endWrapChar string) {
+		if part != "" && part != "<nil>" {
+			part = strings.ReplaceAll(part, "\n", "_")
+			messageParts = append(messageParts, fmt.Sprintf("%s%s%s", startWrapChar, part, endWrapChar))
+		}
+	}
+
+	wrapWith(clr, "", "")
+	wrapWith(build.Status.String(), "*", "*")
+	if build.Substitutions["REPO_NAME"] != "" {
+		wrapWith(build.Substitutions["REPO_NAME"], "– `", "`")
+	} else if build.Substitutions["TRIGGER_NAME"] != "" {
+		wrapWith(build.Substitutions["TRIGGER_NAME"], "– `", "`")
+	} else {
+		wrapWith("Trigger manually", "– ", "")
+	}
+	wrapWith(buildDuration, "– _", "_")
+	wrapWith(build.Substitutions["REF_NAME"], "`", "`")
+	wrapWith(build.Substitutions["_COMMIT_MESSAGE"], "– _\"", "\"_")
+	wrapWith(build.GetFailureInfo().String(), "– _\"", "\"_")
+
+	// Create message text without unnecessary characters
+	messageText := strings.Join(messageParts, " ")
+
+	log.Infof("messageText: %+v", messageText)
+
+	// attachments in Slack payload: https://api.slack.com/methods/chat.postMessage#arg_attachments
+	return &slack.WebhookMessage{
+		Text: messageText,
+		Attachments: []slack.Attachment{
+			{
+				Color:  colourCode,
+				Blocks: blocks,
+			}},
+	}, nil
+}
+
+func formatDuration(seconds int) string {
+	minutes := seconds / 60
+	remainingSeconds := seconds % 60
+	return fmt.Sprintf("%dm%ds", minutes, remainingSeconds)
 }
