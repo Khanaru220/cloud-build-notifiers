@@ -39,8 +39,7 @@ There are currently 4 supported notifier types:
 - Add those substitution variables in the trigger build to provide data for binding to `./slack/slack.json.`
 
 ```bash
-gcloud beta builds triggers update TRIGGER_ID \
-    --substitutions _COMMIT_MESSAGE="\${commit.commit.message}",_COMMIT_URL="\${commit.url}",_COMMIT_USER="\${commit.author.login}",_PUSH_NAME="\${push.repository.name}"
+gcloud beta builds triggers update github {{TRIGGER_ID}} --update-substitutions=_COMMIT_MESSAGE="\$(commit.commit.message)",_COMMIT_URL="\$(commit.url)",_COMMIT_USER="\$(commit.author.login)",_PUSH_NAME="\$(push.repository.name)",_COMMIT_HTML_URL="\$(commit.html_url)"
 ```
 
 - edit Gcloud service (Storage, Run, Secret) in `./slack/slack.json` and `./slack/deploy.cloudbuild.yaml`

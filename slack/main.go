@@ -134,16 +134,16 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 
 	switch build.Status {
 	case cbpb.Build_SUCCESS:
-		clr = "🟢"
-		colourCode = "#0DBE0C"
+		clr = "✅"
+		colourCode = "#4CAF50"
 		buildDuration = formatDuration(int(build.FinishTime.Seconds) - int(build.StartTime.Seconds))
 	case cbpb.Build_FAILURE, cbpb.Build_INTERNAL_ERROR, cbpb.Build_TIMEOUT, cbpb.Build_EXPIRED, cbpb.Build_CANCELLED:
-		clr = "🔴"
-		colourCode = "#AE1413"
+		clr = "❌"
+		colourCode = "#F44336"
 		buildDuration = formatDuration(int(time.Now().Unix()) - int(build.StartTime.Seconds))
 	default:
-		clr = "🟠"
-		colourCode = "#DE7A00"
+		clr = "⏳"
+		colourCode = "#9C27B0"
 	}
 
 	var buf bytes.Buffer
