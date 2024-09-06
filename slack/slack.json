@@ -3,7 +3,7 @@
 		"type": "section",
 		"text": {
 			"type": "mrkdwn",
-			"text": "{{if .Build.Substitutions.REPO_NAME}}\n*GitHub*: `<{{.Build.Substitutions._COMMIT_HTML_URL}}|{{.Build.Substitutions.SHORT_SHA}}>` by *{{.Build.Substitutions._COMMIT_USER}}*{{end}}\n*Build*: `<{{.Build.LogUrl}}|{{slice .Build.Id 0 8}}>`{{if .Build.Substitutions.TRIGGER_NAME}} – `{{.Build.Substitutions.TRIGGER_NAME}}`{{end}} – _<!date^{{.Build.CreateTime.Seconds}}^{date_short} {time}|Time Create Build>_"
+			"text": "{{if .Build.Substitutions.REPO_NAME}}\n*Commit GitHub*: <{{.Build.Substitutions._COMMIT_HTML_URL}}|{{.Build.Substitutions.SHORT_SHA}}> by *{{.Build.Substitutions._COMMIT_USER}}*{{end}}\n*Cloud Build*: <{{.Build.LogUrl}}|{{slice .Build.Id 0 8}}>{{if .Build.Substitutions.TRIGGER_NAME}} – _{{.Build.Substitutions.TRIGGER_NAME}}_{{end}} – _<!date^{{.Build.CreateTime.Seconds}}^{date_short} {time}|Time Create Build>_"
 		}
 	}
 ]

@@ -143,7 +143,7 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 		buildDuration = formatDuration(int(time.Now().Unix()) - int(build.StartTime.Seconds))
 	default:
 		clr = "⏳"
-		colourCode = "#9C27B0"
+		colourCode = "#D77202"
 	}
 
 	var buf bytes.Buffer
@@ -185,8 +185,8 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 		wrapWith(build.Substitutions["REF_NAME"], "`", "`")
 	}
 
-	wrapWith(build.Substitutions["_COMMIT_MESSAGE"], "– _\"", "\"_")
 	wrapWith(buildDuration, "– _", "_")
+	wrapWith(build.Substitutions["_COMMIT_MESSAGE"], "\n> _\"", "\"_")
 	wrapWith(build.GetFailureInfo().String(), "\n> *Error*: _\"", "\"_")
 
 	// Create message text without unnecessary characters
