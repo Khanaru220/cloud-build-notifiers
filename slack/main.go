@@ -170,11 +170,9 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 	wrapWith := func(part string, startWrapChar string, endWrapChar string) {
 		if part != "" && part != "<nil>" {
 			part = strings.TrimSpace(part)
-			log.Infof("PART trimspace: %q", part)
 			part = strings.ReplaceAll(part, "\\r\\n", "; ")
 			part = strings.ReplaceAll(part, "\\n", "; ")
 			part = strings.ReplaceAll(part, "; ;", ";")
-			log.Infof("PART ReplaceAll: %q", part)
 			messageParts = append(messageParts, fmt.Sprintf("%s%s%s", startWrapChar, part, endWrapChar))
 		}
 	}
@@ -191,8 +189,7 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 	}
 
 	wrapWith(buildDuration, "– _", "_")
-	// wrapWith(build.Substitutions["_COMMIT_MESSAGE"], "\n> _\"", "\"_")
-	wrapWith(`chore: clean project (#201)\n\n* chore: +move old code to /deprecated\r\n\r\n* chore: +move database code inside function so libraries like sqlalchemy is not required\r\n\r\n* chore: +update requirements.txt, remove database libraries\r\n\r\n* chore: +add mypy for type checking and black formatter`, "\n> _\"", "\"_")
+	wrapWith(build.Substitutions["_COMMIT_MESSAGE"], "\n> _\"", "\"_")
 	wrapWith(build.GetFailureInfo().String(), "\n> *Error*: _\"", "\"_")
 
 	// Create message text without unnecessary characters
