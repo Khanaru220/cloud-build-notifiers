@@ -1,13 +1,12 @@
 name: Create PR from 'stag-playground' to 'master' after push to Release
 
-env:
-  BASE_BRANCH: master
-  HEAD_BRANCH: stag-playground
-
 on:
   push:
     branches:
       - stag-playground
+env:
+  BASE_BRANCH: master
+  HEAD_BRANCH: stag-playground
 
 jobs:
   create-pr:
@@ -15,6 +14,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        run: echo $BASE_BRANCH # Uses the global environment variable
 
       - name: Check differences
         id: check_diff
