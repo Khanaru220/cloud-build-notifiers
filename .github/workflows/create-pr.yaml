@@ -33,8 +33,7 @@ jobs:
         with:
           title: "Merge branch '$BASE_BRANCH' into '$HEAD_BRANCH'"
           body: 'This PR was created from Github Action "Create PR from Release to Main after push to Release"'
-          base: $BASE_BRANCH
-          branch: $HEAD_BRANCH
+          branch: $BASE_BRANCH
           labels: auto:github_action
 
       - name: Check outputs
