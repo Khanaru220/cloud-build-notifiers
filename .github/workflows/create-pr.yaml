@@ -23,7 +23,7 @@ jobs:
         # git diff --quite will return exit code. "1" if different, "0" if not different
         run: |
           git fetch origin $BASE_BRANCH
-          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo is_different=$?
+          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "is_different=$?" >> $GITHUB_OUTPUT
           echo ${{ steps.check_diff.outputs.is_different }}
 
       - name: Crate Pull Request
