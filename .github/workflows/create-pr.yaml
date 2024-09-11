@@ -20,14 +20,15 @@ jobs:
 
       - name: Check differences
         id: check_diff
+        # git diff --quite will return exit code. "1" if different, "0" if not different
         run: |
           git fetch origin $BASE_BRANCH
-          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "differences found"
+          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "is_different=$?"
           echo ${{ steps.check_diff.outputs }}
 
       - name: Crate Pull Request
         id: cpr
-        if: steps.check_diff.outputs.differences_found == 'differences found'
+        if: steps.check_diff.outputs.is_different == 1
         uses: peter-evans/create-pull-request@v7.0.1
         with:
           title: "Merge branch '$BASE_BRANCH' into '$HEAD_BRANCH'"
