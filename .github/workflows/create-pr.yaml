@@ -1,8 +1,8 @@
-name: Create PR from '$HEAD_BRANCH' to '$BASE_BRANCH' after push to Release
+name: Create PR from 'stag-playground' to 'master' after push to Release
 
 env:
-  BASE_BRANCH: 'master'
-  HEAD_BRANCH: 'stag-playground'
+  BASE_BRANCH: master
+  HEAD_BRANCH: stag-playground
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         id: check_diff
         run: |
           git fetch origin $BASE_BRANCH
-          git diff -quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "differences found"
+          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "differences found"
 
       - name: Crate Pull Request
         id: cpr
