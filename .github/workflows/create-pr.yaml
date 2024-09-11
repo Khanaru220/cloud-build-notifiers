@@ -23,7 +23,7 @@ jobs:
         run: |
           git fetch origin $BASE_BRANCH
           git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "differences found"
-          echo steps.check_diff.outputs
+          echo ${{ steps.check_diff.outputs }}
 
       - name: Crate Pull Request
         id: cpr
