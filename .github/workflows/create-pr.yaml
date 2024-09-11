@@ -2,7 +2,8 @@ name: Create PR from Release to Main after push to Release
 
 on:
   push:
-    - stag-playground
+    branches:
+      - stag-playground
 
 jobs:
   create-pr:
