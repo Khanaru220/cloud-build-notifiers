@@ -12,9 +12,11 @@ jobs:
   create-pr:
     runs-on: ubuntu-latest
     steps:
+      - name: Log env
+        run: echo $BASE_BRANCH # Uses the global environment variable
+
       - name: Checkout code
         uses: actions/checkout@v4
-        run: echo $BASE_BRANCH # Uses the global environment variable
 
       - name: Check differences
         id: check_diff
