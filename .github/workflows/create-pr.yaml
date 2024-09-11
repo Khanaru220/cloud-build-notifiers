@@ -1,9 +1,13 @@
-name: Create PR from Release to Main after push to Release
+name: Create PR from '$HEAD_BRANCH' to '$BASE_BRANCH' after push to Release
+
+env:
+  BASE_BRANCH: 'master'
+  HEAD_BRANCH: 'stag-playground'
 
 on:
   push:
     branches:
-      - stag-playground
+      - $HEAD_BRANCH
 
 jobs:
   create-pr:
@@ -15,18 +19,18 @@ jobs:
       - name: Check differences
         id: check_diff
         run: |
-          git fetch origin main
-          git diff -quiet origin/master origin/stag-playground || echo "differences found"
+          git fetch origin $BASE_BRANCH
+          git diff -quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "differences found"
 
       - name: Crate Pull Request
         id: cpr
         if: steps.check_diff.outputs.differences_found == 'differences found'
         uses: peter-evans/create-pull-request@v7.0.1
         with:
-          title: "Merge branch 'master' into 'stag-playground'"
+          title: "Merge branch '$BASE_BRANCH' into '$HEAD_BRANCH'"
           body: 'This PR was created from Github Action "Create PR from Release to Main after push to Release"'
-          base: master
-          head: release
+          base: $BASE_BRANCH
+          head: $HEAD_BRANCH
           labels: auto:github_action
 
       - name: Check outputs
