@@ -18,26 +18,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check differences
-        id: check_diff
-        # git diff --quite will return exit code. "1" if different, "0" if not different
-        run: |
-          git fetch origin $BASE_BRANCH
-          git diff --quiet origin/$BASE_BRANCH origin/$HEAD_BRANCH || echo "is_different=$?" >> $GITHUB_OUTPUT
-          echo ${{ steps.check_diff.outputs.is_different }}
-
       - name: Crate Pull Request
         id: cpr
-        if: steps.check_diff.outputs.is_different == '1'
         uses: peter-evans/create-pull-request@v7.0.1
         with:
           title: "Merge branch '$BASE_BRANCH' into '$HEAD_BRANCH'"
           body: 'This PR was created from Github Action "Create PR from Release to Main after push to Release"'
-          branch: $BASE_BRANCH
+          branch: origin/$BASE_BRANCH
           labels: auto:github_action
 
       - name: Check outputs
-        if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
