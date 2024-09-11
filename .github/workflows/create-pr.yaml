@@ -1,0 +1,35 @@
+name: Create PR from Release to Main after push to Release
+
+on:
+  push:
+    - stag-playground
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check differences
+        id: check_diff
+        run: |
+          git fetch origin main
+          git diff -quiet origin/master origin/stag-playground || echo "differences found"
+
+      - name: Crate Pull Request
+        id: cpr
+        if: steps.check_diff.outputs.differences_found == 'differences found'
+        uses: peter-evans/create-pull-request@v7.0.1
+        with:
+          title: "Merge branch 'master' into 'stag-playground'"
+          body: 'This PR was created from Github Action "Create PR from Release to Main after push to Release"'
+          base: master
+          head: release
+          labels: auto:github_action
+
+      - name: Check outputs
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
