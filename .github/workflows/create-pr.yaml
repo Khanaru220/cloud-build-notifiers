@@ -25,7 +25,7 @@ jobs:
           commit-message: 'merge branch'
           title: "Merge branch '$BASE_BRANCH' into '$HEAD_BRANCH'"
           body: 'This PR was created from Github Action "Create PR from Release to Main after push to Release"'
-          branch: master
+          branch: $HEAD_BRANCH
           labels: auto:github_action
 
       - name: Check outputs
