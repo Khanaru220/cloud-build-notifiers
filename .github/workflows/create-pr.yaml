@@ -25,7 +25,6 @@ jobs:
           commit-message: 'merge branch'
           base: master
           branch: stag-playground
-          labels: auto:github_action
           title: '[Example] Update report'
           body: |
             Update report
