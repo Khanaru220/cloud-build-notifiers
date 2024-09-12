@@ -23,8 +23,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'merge branch'
-          base: master
-          branch: stag-playground
+          base: stag-playground
+          branch: master
           title: '[Example] Update report'
           body: |
             Update report
