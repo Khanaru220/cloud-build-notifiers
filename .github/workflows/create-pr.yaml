@@ -23,7 +23,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'merge branch'
-          base: Khanaru220:feat/add-custom-func_message_duration
+          base: feat/add-custom-func_message_duration
           branch: stag-playground
           title: '[Example] Update report'
           body: |
