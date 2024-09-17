@@ -11,14 +11,11 @@ git checkout $TARGET_BRANCH
 CURRENT_COMMIT=$(git rev-parse HEAD)
 
 # *Step 3: Merge the Original Branch*
-git merge $SOURCE_BRANCH
-
-# *Step 4: Checkout the Specific Files You Want to Keep*
-git checkout $CURRENT_COMMIT -- $FILE_TO_KEEP1 $FILE_TO_KEEP2
+git pull origin $SOURCE_BRANCH
 
 # *Step 5: Verify Changes (Optional)*
 echo "___The following files have been preserved: $FILE_TO_KEEP1 and $FILE_TO_KEEP2" 
 
 # *Step 7: Push the Changes (if necessary)*
-git push origin $TARGET_BRANCH
+git push
 echo "___Merge completed successfully!"
