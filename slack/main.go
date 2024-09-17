@@ -173,8 +173,10 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 			part = strings.TrimSpace(part)
 			part = strings.ReplaceAll(part, "\\r\\n", "; ")
 			part = strings.ReplaceAll(part, "\\n", "; ")
-			part = strings.ReplaceAll(part, "\n", "; ")
+			part = strings.ReplaceAll(part, "\\r", "; ")
 			part = strings.ReplaceAll(part, "\r\n", "; ")
+			part = strings.ReplaceAll(part, "\n", "; ")
+			part = strings.ReplaceAll(part, "\r", "; ")
 
 			// Remove any duplicate semicolons
 			part = strings.ReplaceAll(part, "; ;", ";")
