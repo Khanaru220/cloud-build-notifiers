@@ -97,9 +97,8 @@ func (s *slackNotifier) SendNotification(ctx context.Context, build *cbpb.Build)
 	}
 
 	log.Infof("sending Slack webhook for Build %q (status: %q)", build.Id, build.Status)
-
-	log.Infof("Log build: %+v", build)
-	log.Infof("Log context: %+v", ctx)
+	log.Infof("Log build in SendNotification(): %+v", build)
+	log.Infof("Log context in SendNotification(): %+v", ctx)
 
 	bindings, err := s.br.Resolve(ctx, nil, build)
 	if err != nil {
@@ -157,6 +156,7 @@ func (s *slackNotifier) writeMessage() (*slack.WebhookMessage, error) {
 		return nil, fmt.Errorf("failed to unmarshal templating JSON: %w", err)
 	}
 
+	log.Infof("Log build in writeMessage(): %+v", build)
 	log.Infof("Block in writeMessage() %+v", blocks)
 	log.Infof("clr %q", clr)
 
